@@ -1,6 +1,7 @@
-package tasks.model;
+package tasks.repository;
 
 import org.apache.log4j.Logger;
+import tasks.model.Task;
 
 import java.util.Iterator;
 import java.util.LinkedList;

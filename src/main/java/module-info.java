@@ -10,4 +10,8 @@ module tasks {
     exports tasks.controller;
     exports tasks;
     opens tasks to javafx.fxml;
+    exports tasks.repository;
+    opens tasks.repository to javafx.base;
+    exports tasks.services;
+    opens tasks.services to javafx.base;
 }
