@@ -1,4 +1,4 @@
-package tasks.view;
+package tasks;
 
 import javafx.application.Application;
 import javafx.collections.FXCollections;

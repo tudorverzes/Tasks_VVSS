@@ -148,7 +148,7 @@
           </execution>
         </executions>
         <configuration>
-          <mainClass>tasks.view.Main</mainClass>
+          <mainClass>tasks.Main</mainClass>
         </configuration>
       </plugin>
 
