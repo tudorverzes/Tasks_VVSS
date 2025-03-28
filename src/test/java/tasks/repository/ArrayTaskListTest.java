@@ -43,4 +43,31 @@ class ArrayTaskListTest {
         assertEquals(2, taskList.size());
     }
 
+    @Test
+    @DisplayName("BVA1")
+    public void testAddOneTask() {
+        ArrayTaskList taskList = new ArrayTaskList();
+        Task task = new Task(1, "Test Task", "Description", new Date(), true);
+
+        taskList.add(task);
+
+        assertEquals(1, taskList.size());
+        assertEquals(task, taskList.getTask(0));
+    }
+
+    @Test
+    @DisplayName("BVA2")
+    public void testGetTaskOutOfBounds() {
+        ArrayTaskList taskList = new ArrayTaskList();
+
+        Exception exception = assertThrows(IndexOutOfBoundsException.class, () -> {
+            taskList.getTask(0); // No task added, index 0 is out of bounds
+        });
+
+        assertEquals("Index not found", exception.getMessage());
+    }
+
+
+
+
 }
