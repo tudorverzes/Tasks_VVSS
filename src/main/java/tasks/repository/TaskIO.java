@@ -29,12 +29,10 @@ public class TaskIO {
                 dataOutputStream.writeInt(t.getTitle().length());
                 dataOutputStream.writeUTF(t.getTitle());
                 dataOutputStream.writeBoolean(t.isActive());
-                dataOutputStream.writeInt(t.getRepeatInterval());
+                dataOutputStream.writeInt(t.getInterval());
                 if (t.isRepeated()) {
-                    dataOutputStream.writeLong(t.getStartTime().getTime());
-                    dataOutputStream.writeLong(t.getEndTime().getTime());
-                } else {
-                    dataOutputStream.writeLong(t.getTime().getTime());
+                    dataOutputStream.writeLong(t.getStart().getTime());
+                    dataOutputStream.writeLong(t.getEnd().getTime());
                 }
             }
         }
@@ -50,9 +48,9 @@ public class TaskIO {
                 Task taskToAdd;
                 if (interval > 0) {
                     Date endTime = new Date(dataInputStream.readLong());
-                    taskToAdd = new Task(title, startTime, endTime, interval);
+                    taskToAdd = new Task(1, title, "", startTime, endTime, interval, true);
                 } else {
-                    taskToAdd = new Task(title, startTime);
+                    taskToAdd = new Task(1, title, "", startTime, true);
                 }
                 taskToAdd.setActive(isActive);
                 tasks.add(taskToAdd);
@@ -121,11 +119,11 @@ public class TaskIO {
             Date startTime = getDateFromText(line, true);
             Date endTime = getDateFromText(line, false);
             int interval = getIntervalFromText(line);
-            result = new Task(title, startTime, endTime, interval);
+            result = new Task(1, title, "", startTime, endTime, interval, true);
         }
         else {
             Date startTime = getDateFromText(line, true);
-            result = new Task(title, startTime);
+            result = new Task(1, title, "", startTime, true);
         }
         result.setActive(isActive);
         return result;
@@ -203,16 +201,16 @@ public class TaskIO {
 
         if (task.isRepeated()){
             result.append(" from ");
-            result.append(simpleDateFormat.format(task.getStartTime()));
+            result.append(simpleDateFormat.format(task.getStart()));
             result.append(" to ");
-            result.append(simpleDateFormat.format(task.getEndTime()));
+            result.append(simpleDateFormat.format(task.getEnd()));
             result.append(" every ").append("[");
-            result.append(getFormattedInterval(task.getRepeatInterval()));
+            result.append(getFormattedInterval(task.getInterval()));
             result.append("]");
         }
         else {
             result.append(" at ");
-            result.append(simpleDateFormat.format(task.getStartTime()));
+            result.append(simpleDateFormat.format(task.getStart()));
         }
         if (!task.isActive()) result.append(" inactive");
         return result.toString().trim();

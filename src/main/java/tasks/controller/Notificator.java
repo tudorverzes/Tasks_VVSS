@@ -28,7 +28,7 @@ public class Notificator extends Thread {
 
             for (Task t : tasksList) {
                 if (t.isActive()) {
-                    if (t.isRepeated() && t.getEndTime().after(currentDate)){
+                    if (t.isRepeated() && t.getEnd().after(currentDate)){
 
                         Date next = t.nextTimeAfter(currentDate);
                         long currentMinute = getTimeInMinutes(currentDate);
@@ -37,14 +37,7 @@ public class Notificator extends Thread {
                             showNotification(t);
                         }
                     }
-                    else {
-                        if (!t.isRepeated()){
-                            if (getTimeInMinutes(currentDate) == getTimeInMinutes(t.getTime())){
-                                showNotification(t);
-                            }
-                        }
 
-                    }
                 }
 
             }

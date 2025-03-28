@@ -19,7 +19,7 @@ public class TasksService {
         return FXCollections.observableArrayList(tasks.getAll());
     }
     public String getIntervalInHours(Task task){
-        int seconds = task.getRepeatInterval();
+        int seconds = task.getInterval();
         int minutes = seconds / DateService.SECONDS_IN_MINUTE;
         int hours = minutes / DateService.MINUTES_IN_HOUR;
         minutes = minutes % DateService.MINUTES_IN_HOUR;

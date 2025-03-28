@@ -104,15 +104,15 @@ public class NewEditController {
     private void initEditWindow(String title){
         currentStage.setTitle(title);
         fieldTitle.setText(currentTask.getTitle());
-        datePickerStart.setValue(dateService.getLocalDateValueFromDate(currentTask.getStartTime()));
-        txtFieldTimeStart.setText(dateService.getTimeOfTheDayFromDate(currentTask.getStartTime()));
+        datePickerStart.setValue(dateService.getLocalDateValueFromDate(currentTask.getStart()));
+        txtFieldTimeStart.setText(dateService.getTimeOfTheDayFromDate(currentTask.getStart()));
 
         if (currentTask.isRepeated()){
             checkBoxRepeated.setSelected(true);
             hideRepeatedTaskModule(false);
-            datePickerEnd.setValue(dateService.getLocalDateValueFromDate(currentTask.getEndTime()));
+            datePickerEnd.setValue(dateService.getLocalDateValueFromDate(currentTask.getEnd()));
             fieldInterval.setText(service.getIntervalInHours(currentTask));
-            txtFieldTimeEnd.setText(dateService.getTimeOfTheDayFromDate(currentTask.getEndTime()));
+            txtFieldTimeEnd.setText(dateService.getTimeOfTheDayFromDate(currentTask.getEnd()));
         }
         if (currentTask.isActive()){
             checkBoxActive.setSelected(true);
@@ -196,10 +196,10 @@ public class NewEditController {
             Date newEndDate = dateService.getDateMergedWithTime(txtFieldTimeEnd.getText(), endDateWithNoTime);
             int newInterval = service.parseFromStringToSeconds(fieldInterval.getText());
             if (newStartDate.after(newEndDate)) throw new IllegalArgumentException("Start date should be before end");
-            result = new Task(newTitle, newStartDate,newEndDate, newInterval);
+            result = new Task(1, newTitle, "", newStartDate,newEndDate, newInterval, true);
         }
         else {
-            result = new Task(newTitle, newStartDate);
+            result = new Task(1, newTitle, "", newStartDate, true);
         }
         boolean isActive = checkBoxActive.isSelected();
         result.setActive(isActive);

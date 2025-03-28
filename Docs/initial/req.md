@@ -5,7 +5,6 @@ Funcționalități:
   - Dacă task-ul este repetitiv, atunci se indică intervalul de timp la care se va repeta, dat ca număr de ore și minute.
   - Task-ul poate fi activ sau nu.
   - Se validează ca data de început să fie ulterioară momentului curent și anterioară datei de sfârșit.
-  - Se verifică suprapunerile cu alte task-uri deja existente.
 
 - F02. Afișarea task-urilor planificate într-o anumită perioadă de timp, precizată ca dată și oră de început și dată și oră de sfârșit.
   - Posibilitatea de a sorta și filtra task-urile după criterii precum: dată, prioritate, stare (activ/completat).

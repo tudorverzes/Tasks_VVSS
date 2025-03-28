@@ -24,9 +24,9 @@ public class TaskInfoController {
         log.info("task info window initializing");
         Task currentTask = (Task)Controller.mainTable.getSelectionModel().getSelectedItem();
         labelTitle.setText("Title: " + currentTask.getTitle());
-        labelStart.setText("Start time: " + currentTask.getFormattedDateStart());
-        labelEnd.setText("End time: " + currentTask.getFormattedDateEnd());
-        labelInterval.setText("Interval: " + currentTask.getFormattedRepeated());
+        labelStart.setText("Start time: " + currentTask.toString());
+        labelEnd.setText("End time: " + currentTask.toString());
+        labelInterval.setText("Interval: " + currentTask.toString());
         labelIsActive.setText("Is active: " + (currentTask.isActive() ? "Yes" : "No"));
     }
     @FXML
