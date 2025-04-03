@@ -1,17 +1,19 @@
 package tasks.repository;
 
-
 import org.apache.log4j.Logger;
 import tasks.model.Task;
+import tasks.validator.TaskValidator;
 
 import java.util.*;
 
 public class ArrayTaskList extends TaskList {
-
     private Task[] tasks;
     private int numberOfTasks;
     private int currentCapacity;
+    private final Set<Integer> taskIds = new HashSet<>();
     private static final Logger log = Logger.getLogger(ArrayTaskList.class.getName());
+    private static final int INITIAL_CAPACITY = 10;
+    private final TaskValidator taskValidator = new TaskValidator();
 
     private class ArrayTaskListIterator implements Iterator<Task> {
         private int cursor;
@@ -44,7 +46,7 @@ public class ArrayTaskList extends TaskList {
     }
 
     public ArrayTaskList() {
-        currentCapacity = 10;
+        currentCapacity = INITIAL_CAPACITY;
         this.tasks = new Task[currentCapacity];
     }
 
@@ -55,17 +57,38 @@ public class ArrayTaskList extends TaskList {
 
     @Override
     public void add(Task task) {
-        if (task == null) throw new NullPointerException("Task shouldn't be null");
+        if (task == null) {
+            throw new NullPointerException("Task shouldn't be null");
+        }
+
+        try {
+            taskValidator.validate(task);
+        } catch (IllegalArgumentException e) {
+            log.error("Task validation failed: " + e.getMessage());
+            throw e;
+        }
+
+        if (taskIds.contains(task.getId())) {
+            throw new IllegalArgumentException("Task with ID " + task.getId() + " already exists");
+        }
+
+        ensureCapacity();
+        tasks[numberOfTasks++] = task;
+        taskIds.add(task.getId());
+    }
+
+    private void ensureCapacity() {
         if (numberOfTasks == currentCapacity) {
             currentCapacity *= 2;
             tasks = Arrays.copyOf(tasks, currentCapacity);
         }
-        tasks[numberOfTasks++] = task;
     }
 
     @Override
     public boolean remove(Task task) {
-        if (task == null) return false;
+        if (task == null) {
+            return false;
+        }
 
         int indexOfTaskToDelete = -1;
         for (int i = 0; i < numberOfTasks; i++) {
@@ -76,8 +99,11 @@ public class ArrayTaskList extends TaskList {
         }
 
         if (indexOfTaskToDelete >= 0) {
-            System.arraycopy(tasks, indexOfTaskToDelete + 1, tasks, indexOfTaskToDelete, numberOfTasks - indexOfTaskToDelete - 1);
-            tasks[--numberOfTasks] = null; // Elimină referința ultimului element duplicat
+            Task removedTask = tasks[indexOfTaskToDelete];
+            System.arraycopy(tasks, indexOfTaskToDelete + 1, tasks, indexOfTaskToDelete,
+                    numberOfTasks - indexOfTaskToDelete - 1);
+            tasks[--numberOfTasks] = null;
+            taskIds.remove(removedTask.getId());
             return true;
         }
         return false;
@@ -109,7 +135,9 @@ public class ArrayTaskList extends TaskList {
 
         ArrayTaskList that = (ArrayTaskList) o;
 
-        return numberOfTasks == that.numberOfTasks && Arrays.equals(Arrays.copyOf(tasks, numberOfTasks), Arrays.copyOf(that.tasks, that.numberOfTasks));
+        return numberOfTasks == that.numberOfTasks &&
+                Arrays.equals(Arrays.copyOf(tasks, numberOfTasks),
+                        Arrays.copyOf(that.tasks, that.numberOfTasks));
     }
 
     @Override
@@ -130,8 +158,12 @@ public class ArrayTaskList extends TaskList {
     protected ArrayTaskList clone() {
         ArrayTaskList clonedList = new ArrayTaskList();
         for (int i = 0; i < numberOfTasks; i++) {
-            clonedList.add(tasks[i]);
+            clonedList.add(tasks[i].clone());
         }
         return clonedList;
+    }
+
+    public boolean containsId(int id) {
+        return taskIds.contains(id);
     }
 }

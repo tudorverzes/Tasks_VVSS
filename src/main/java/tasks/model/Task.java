@@ -8,7 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
 
-public class Task implements Serializable {
+public class Task implements Serializable, Cloneable {
     private int id;
     private String title;
     private String description;
@@ -141,5 +141,16 @@ public class Task implements Serializable {
         }
 
         return nextTime <= endTime ? new Date(nextTime) : null;
+    }
+
+    @Override
+    public Task clone() {
+        try {
+            Task clone = (Task) super.clone();
+            // TODO: copy mutable state here, so the clone can't change the internals of the original
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
     }
 }
