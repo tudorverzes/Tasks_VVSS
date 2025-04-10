@@ -19,7 +19,7 @@ class ArrayTaskListTest {
 
     @Test
     @DisplayName("ECP1")
-    public void testCreateValidSimpleTask() {
+    void testCreateValidSimpleTask() {
         Task task = new Task(1, "Complete report", "Monthly report", new Date(2025, 5, 1), true);
         taskList.add(task);
         assertEquals(1, taskList.size());
