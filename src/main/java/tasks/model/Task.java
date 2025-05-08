@@ -117,25 +117,44 @@ public class Task implements Serializable, Cloneable {
         return interval != 0;
     }
 
+    
     public Date nextTimeAfter(Date current) {
         if (current == null || !active) {
             return null;
         }
 
-        if (current.after(end) || current.equals(end)) {
+        if (!isRepeated()) {
+            if (start != null && current.before(start)) {
+                return new Date(start.getTime());
+            }
+            
+            if (start != null && !current.after(start)) {
+                return new Date(start.getTime());
+            }
             return null;
         }
 
-        if (current.before(start)) {
-            return new Date(start.getTime());
+        if (this.end == null) {
+            return null;
+        }
+
+        if (current.after(this.end) || current.equals(this.end)) {
+            return null;
+        }
+
+        if (current.before(this.start)) {
+            return new Date(this.start.getTime());
         }
 
         long currentTime = current.getTime();
-        long startTime = start.getTime();
-        long endTime = end.getTime();
-        long intervalMillis = interval * 1000L;
+        long startTime = this.start.getTime();
+        long endTime = this.end.getTime();
+        long intervalMillis = this.interval * 1000L;
 
         long nextTime = startTime;
+        
+        if (intervalMillis <= 0) return null;
+
         while (nextTime <= endTime && nextTime <= currentTime) {
             nextTime += intervalMillis;
         }
@@ -147,7 +166,7 @@ public class Task implements Serializable, Cloneable {
     public Task clone() {
         try {
             Task clone = (Task) super.clone();
-            // TODO: copy mutable state here, so the clone can't change the internals of the original
+            
             return clone;
         } catch (CloneNotSupportedException e) {
             throw new AssertionError();
