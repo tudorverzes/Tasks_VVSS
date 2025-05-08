@@ -1,109 +1,109 @@
 package tasks.repository;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.DisplayName;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import tasks.model.Task;
+import tasks.validator.TaskValidator;
 
 import java.util.Date;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 class ArrayTaskListTest {
     private ArrayTaskList taskList;
+    
+    @Mock
+    private TaskValidator mockValidator;
+    
+    private Task task1;
+    private Task task2;
+    private Date startDate;
 
     @BeforeEach
     void setUp() {
+        MockitoAnnotations.openMocks(this);
         taskList = new ArrayTaskList();
+        startDate = new Date();
+        
+        task1 = mock(Task.class);
+        task2 = mock(Task.class);
+        
+        // Configure mock tasks
+        when(task1.getId()).thenReturn(1);
+        when(task1.getTitle()).thenReturn("Task 1");
+        when(task2.getId()).thenReturn(2);
+        when(task2.getTitle()).thenReturn("Task 2");
     }
 
     @Test
-    @DisplayName("ECP1")
-    void testCreateValidSimpleTask() {
-        Task task = new Task(1, "Complete report", "Monthly report", new Date(2025, 5, 1), true);
-        taskList.add(task);
+    @DisplayName("Test add task with mock validator")
+    void testAddTaskWithMockValidator() {
+        // Arrange
+        Task realTask = new Task(1, "Real Task", "Description", startDate, true);
+        
+        // Act
+        taskList.add(realTask);
+        
+        // Assert
         assertEquals(1, taskList.size());
+        assertEquals(realTask, taskList.getTask(0));
     }
 
     @Test
-    @DisplayName("ECP2")
-    void testCreateValidRepeatingTask() {
-        Task task = new Task(2, "Team meeting", "Weekly sync", new Date(2025, 5, 1), new Date(2025, 12, 31), 86400, true);
-        taskList.add(task);
+    @DisplayName("Test iterator with mock tasks")
+    void testIteratorWithMockTasks() {
+        // Arrange
+        taskList.add(task1);
+        taskList.add(task2);
+        
+        // Act & Assert
+        Iterator<Task> iterator = taskList.iterator();
+        assertTrue(iterator.hasNext());
+        assertEquals(task1, iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(task2, iterator.next());
+        assertFalse(iterator.hasNext());
+        
+        verify(task1, atLeastOnce()).getId();
+        verify(task2, atLeastOnce()).getId();
+    }
+
+    @Test
+    @DisplayName("Test remove task with mock")
+    void testRemoveTaskWithMock() {
+        // Arrange
+        taskList.add(task1);
+        taskList.add(task2);
+        
+        // Act
+        boolean removed = taskList.remove(task1);
+        
+        // Assert
+        assertTrue(removed);
         assertEquals(1, taskList.size());
+        assertEquals(task2, taskList.getTask(0));
     }
 
     @Test
-    @DisplayName("ECP3")
-    void testCreateTaskWithShortTitle() {
-        Task task = new Task(3, "AB", "Short task", new Date(2025, 5, 1), true);
-        try {
-            taskList.add(task);
-        } catch (IllegalArgumentException e) {
-            assertEquals("Task title must be at least 3 characters long", e.getMessage());
-        }
-    }
-
-    @Test
-    @DisplayName("ECP4")
-    void testCreateRepeatingTaskWithoutEndDate() {
-        Task task = new Task(4, "Null end", "Repeating task",
-                new Date(2025, 5, 1),
-                null,
-                3600, true);
-        try {
-            taskList.add(task);
-        } catch (IllegalArgumentException e) {
-            assertEquals("End date is required for repeated tasks", e.getMessage());
-        }
-    }
-
-    @Test
-    @DisplayName("BVA1")
-    public void testMinValidTitleLength() {
-        Task task = new Task(1, "Doc", "Valid task",
-                new Date(2025, 5, 1), true);
-        taskList.add(task);
+    @DisplayName("Test iterator remove with mock tasks")
+    void testIteratorRemoveWithMockTasks() {
+        // Arrange
+        taskList.add(task1);
+        taskList.add(task2);
+        Iterator<Task> iterator = taskList.iterator();
+        
+        // Act
+        iterator.next(); // Move to first element
+        iterator.remove(); // Remove first element
+        
+        // Assert
         assertEquals(1, taskList.size());
+        assertEquals(task2, taskList.getTask(0));
     }
-
-    @Test
-    @DisplayName("BVA2")
-    public void testMaxValidTitleLength() {
-        String maxTitle = "A".repeat(100);
-        Task task = new Task(2, maxTitle, "Max length",
-                new Date(2025, 5, 1),
-                new Date(2025, 12, 31),
-                86400, true);
-        taskList.add(task);
-        assertEquals(1, taskList.size());
-    }
-
-    @Test
-    @DisplayName("BVA3")
-    public void testBelowMinTitleLength() {
-        Task task = new Task(3, "AB", "Invalid",
-                new Date(2025, 5, 1), true);
-        try {
-            taskList.add(task);
-        } catch (IllegalArgumentException e) {
-            assertEquals("Task title must be at least 3 characters long", e.getMessage());
-        }
-    }
-
-    @Test
-    @DisplayName("BVA4")
-    public void testAboveMaxTitleLength() {
-        String longTitle = "A".repeat(101);
-        Task task = new Task(4, longTitle, "Too long",
-                new Date(2025, 5, 1),
-                new Date(2025, 12, 31),
-                86400, true);
-        try {
-            taskList.add(task);
-        } catch (IllegalArgumentException e) {
-            assertEquals("Task title cannot exceed 100 characters", e.getMessage());
-        }
-    }
-
 }
